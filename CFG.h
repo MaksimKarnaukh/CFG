@@ -5,9 +5,22 @@
 #ifndef CFG1_CFG_H
 #define CFG1_CFG_H
 
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
 
 class CFG {
+public:
+    vector<string> V;
+    vector<string> T;
+    vector<pair<string, vector<string>>> P;
+    string S;
 
+    CFG();
+
+    void print();
 };
 
 
