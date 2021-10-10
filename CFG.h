@@ -8,8 +8,11 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include "json.hpp"
 
 using namespace std;
+using json = nlohmann::json;
 
 class CFG {
 public:
@@ -18,7 +21,7 @@ public:
     vector<pair<string, vector<string>>> P;
     string S;
 
-    CFG();
+    CFG(const string& filename);
 
     void print();
 };

@@ -4,18 +4,31 @@
 
 #include "CFG.h"
 
-CFG::CFG() {
+CFG::CFG(const string& filename) {
 
-    V = {"BINDIGIT", "S"};
+    ifstream input(filename);
+    if (!input.is_open()) {
+        cerr << "Error while reading file contents" << endl;
+    }
+    json j;
+    input >> j;
 
-    T = {"0", "1", "a", "b"};
+    vector<string> v = j["Variables"];
+    V = v;
+    vector<string> t = j["Terminals"];
+    T = t;
 
-    P.emplace_back("S", vector<string>{""});
-    P.emplace_back("S", vector<string>{"a", "S", "b", "BINDIGIT"});
-    P.emplace_back("BINDIGIT", vector<string>{"0"});
-    P.emplace_back("BINDIGIT", vector<string>{"1"});
+    auto p = j["Productions"];
+    for (auto i = 0; i < p.size(); i++) {
+        if (! p[i]["body"].empty()) {
+            P.emplace_back(p[i]["head"], p[i]["body"]);
+        }
+        else {
+            P.emplace_back(p[i]["head"], vector<string>{"e"});
+        }
+    }
 
-    S = "S";
+    string s = j["Start"]; S = s;
 }
 
 void CFG::print() {
