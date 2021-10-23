@@ -24,7 +24,7 @@ CFG::CFG(const string& filename) {
             P.emplace_back(p[i]["head"], p[i]["body"]);
         }
         else {
-            P.emplace_back(p[i]["head"], vector<string>{"e"});
+            P.emplace_back(p[i]["head"], vector<string>{""});
         }
     }
 
