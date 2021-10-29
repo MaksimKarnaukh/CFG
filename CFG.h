@@ -26,6 +26,8 @@ public:
     CFG(const string& filename);
 
     void print();
+
+    void toCNF();
 };
 
 
