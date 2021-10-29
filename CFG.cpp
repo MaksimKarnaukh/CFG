@@ -68,5 +68,7 @@ void CFG::print() {
     }
     cout << "}" << endl;
 
-    cout << "S = " << S;
+    cout << "S = " << S << endl;
 }
+
+CFG::CFG() = default;

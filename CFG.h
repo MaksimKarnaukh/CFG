@@ -21,6 +21,8 @@ public:
     vector<pair<string, vector<string>>> P;
     string S;
 
+    CFG();
+
     CFG(const string& filename);
 
     void print();
