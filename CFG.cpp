@@ -103,6 +103,10 @@ bool CFG::accepts(const string &str) {
                 X = isProduction(t);
                 layer.push_back(X);
 
+                if (X.size() > maxLength[j]) {
+                    maxLength[j] = X.size();
+                }
+
             }
 
             else {
@@ -148,6 +152,7 @@ bool CFG::accepts(const string &str) {
                 }
                 X = products;
                 layer.push_back(X);
+
                 if (X.size() > maxLength[j]) {
                     maxLength[j] = X.size();
                 }
@@ -160,15 +165,54 @@ bool CFG::accepts(const string &str) {
 
     bool belongs = false;
 
-    for (int i = 0; i < table.size(); i++) {
+    for (int i = (int) table.size()-1; i > 0; i--) {
+
+        if (i == table.size()-1) {
+            if (count(table[i][0].begin(), table[i][0].end(), S)) {
+                belongs = true;
+            }
+        }
 
         for (int j = 0; j < table[i].size(); j++) {
 
+            int totalStringLength = maxLength[j]+(maxLength[j]-1)*2+1+2; // vanaf {
+            int amountOfSpaces = 0; // vanaf }
+            if (table[i][j].empty()) {
+                amountOfSpaces = totalStringLength-1;
+            }
+            else {
+                amountOfSpaces = totalStringLength-((int)table[i][j].size()+((int)table[i][j].size()-1)*2+1);
+            }
+
+            cout << "| ";
+            cout << "{";
+            for (int k = 0; k < table[i][j].size(); k++) {
+                if (table[i][j].empty()) {
+                    cout << "";
+                }
+                else {
+                    cout << table[i][j][k];
+                    if (k != table[i][j].size()-1) {
+                        cout << ", ";
+                    }
+                }
+
+            }
+            cout << "}";
+            for (int k = 0; k < amountOfSpaces; k++) {
+                cout << " ";
+            }
 
         }
+        cout << "|" << endl;
     }
 
-    cout << belongs << endl;
+    if (belongs) {
+        cout << "true" << endl;
+    }
+    else {
+        cout << "false" << endl;
+    }
     return belongs;
 }
 
