@@ -34,10 +34,9 @@ CFG PDA::toCFG() {
     cfg.S = "S"; // standaard S?
     cfg.V.emplace_back("S");
 
-    for (int i = 0; i < this->States.size(); i++) {
+    for (int i = 0; i < this->States.size(); i++) { // variabelen aanmaken
         for (int j = 0; j < this->States.size(); j++) {
             for (int symbol = 0; symbol < this->StackAlphabet.size(); symbol++) {
-//                string stateToString = "[" + this->States[i] + this->StackAlphabet[symbol] + this->States[j] + "]";
                 string stateToString = createBracketState(this->States[i], this->StackAlphabet[symbol], this->States[j]);
 
                 cfg.V.push_back(stateToString);
@@ -46,7 +45,6 @@ CFG PDA::toCFG() {
     }
 
     for (int i = 0; i < this->States.size(); i++) { // voor startsymbool
-//        string stateToString = "[" + this->StartState + this->StartStack + this->States[i] + "]";
         string stateToString = createBracketState(this->StartState, this->StartStack, this->States[i]);
 
         cfg.P.emplace_back("S", vector<string>{stateToString});
@@ -78,12 +76,12 @@ CFG PDA::toCFG() {
                     vector<string> prod = {stateToString2};
                     string temp;
                     for (int j = 0; j < this->Transitions[t]["replacement"].size(); j++) { // bij body, combinatie van alle stacksymbolen uit "replacements".
-                        if (j == 0) {
+                        if (j == 0) { // beginbracket
                             stateToString3 = createBracketState(this->Transitions[t]["to"], this->Transitions[t]["replacement"][j], this->States[k]);
                             temp = this->States[k];
                         }
                         else if (j == this->Transitions[t]["replacement"].size()-1) {
-                            if (nrOfIterations == 1) {
+                            if (nrOfIterations == 1) { // endbracket
                                 stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[k]);
                             }
                             else {
@@ -93,6 +91,8 @@ CFG PDA::toCFG() {
                         else {
                             stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[i]);
                             temp = this->States[i]; // ook
+
+
                         }
                         prod.push_back(stateToString3);
                         stateToString3 = "";

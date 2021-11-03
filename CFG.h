@@ -28,6 +28,10 @@ public:
     void print();
 
     void toCNF();
+
+    bool accepts(const string &str);
+
+    vector<string> isProduction(const vector<string> &body);
 };
 
 
