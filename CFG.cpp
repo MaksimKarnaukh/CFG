@@ -186,6 +186,7 @@ bool CFG::accepts(const string &str) {
 
             cout << "| ";
             cout << "{";
+            sort(table[i][j].begin(), table[i][j].end());
             for (int k = 0; k < table[i][j].size(); k++) {
                 if (table[i][j].empty()) {
                     cout << "";
@@ -215,18 +216,6 @@ bool CFG::accepts(const string &str) {
     }
     return belongs;
 }
-
-//| {A, C, S}  |
-//| {}         | {A, C, S}  |
-//| {}         | {B}        | {B}     |
-//| {A, S}     | {B}        | {C, S}  | {A, S}  |
-//| {B}        | {A, C}     | {A, C}  | {B}     | {A, C}  |
-//true
-//| {}      |
-//| {}      | {A}  |
-//| {C, S}  | {}   | {A, S}  |
-//| {A, C}  | {B}  | {B}     | {A, C}  |
-//false
 
 vector<string> CFG::isProduction(const vector<string> &body) {
 

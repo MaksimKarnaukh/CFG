@@ -6,7 +6,7 @@
     {"from": "q", "input": "1", "stacktop": "X", "to": "p", "replacement": []},
     {"from": "p", "input": "1", "stacktop": "X", "to": "p", "replacement": []},
     {"from": "q", "input": "0", "stacktop": "Z0", "to": "q", "replacement": ["X"]},
-    {"from": "q", "input": "0", "stacktop": "X", "to": "q", "replacement": ["X", "X", "X"]}
+    {"from": "q", "input": "0", "stacktop": "X", "to": "q", "replacement": ["X", "X", "X", "X"]}
   ],
   "StartState": "q",
   "StartStack": "Z0"
