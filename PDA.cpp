@@ -105,25 +105,8 @@ CFG PDA::toCFG() {
                         }
                         else { // middenbracket
 
-//                                temp = deelProductions[k].first; ////
-//                                stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[k]);
-//                                temp = this->States[k];
-
-//                                deelProductions[k].first = temp; // k ?
-//                                deelProductions[k].second.push_back(stateToString3); // production waar we aan toevoegen elke keer
-
-//                                for (int l = 0; l < this->States.size(); l++) {
-//                                    if (l != k) {
-//                                        deelProductions.emplace_back(deelProductions[k].first, deelProductions[k].second);
-//                                        stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[l]);
-//                                        temp = this->States[l];
-//
-//                                    }
-//                                }
-
                             vector<pair<string, vector<string>>> deelProdCopy;
                             for (int c = 0; c < deelProductions.size(); c++) {
-//                                vector<pair<string, vector<string>>> deelProdCopy;
                                 for (int k = 0; k < this->States.size(); k++)  {
 
                                     temp = deelProductions[c].first;
@@ -134,13 +117,11 @@ CFG PDA::toCFG() {
                                     dp.push_back(stateToString3);
 
                                     deelProdCopy.emplace_back(temp, dp);
-//                                    deelProductions = deelProdCopy;
                                 }
                             }
                             deelProductions = deelProdCopy;
                         }
                     }
-//                    prod.push_back(stateToString3);
                     stateToString3 = "";
                 }
                 for (int a = 0; a < deelProductions.size(); a++) {

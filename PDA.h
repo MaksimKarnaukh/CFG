@@ -22,6 +22,8 @@ public:
     CFG toCFG();
 
     string createBracketState(const string& from, const string& stacktop, const string& to); // functie om een state van de vorm [pXq] te maken
+
+    void makeVariabeles(CFG &cfg);
 };
 
 

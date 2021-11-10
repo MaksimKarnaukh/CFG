@@ -21,16 +21,33 @@ public:
     vector<pair<string, vector<string>>> P;
     string S;
 
-    CFG();
+    CFG(); // default constructor
 
     CFG(const string& filename);
 
+    // Functie print:
+    // Printfunctie voor de CFG.
     void print();
 
-    void toCNF();
-
+    // Functie accepts:
+    // Geeft terug of de meegegeven string behoort tot de taal van de grammatica, en print de tabel.
     bool accepts(const string &str);
 
+    // Functie printTable:
+    // Print de tabel voor het CYK algoritme.
+    bool printTable(vector<vector<vector<string>>>& table, const vector<int>& maxLength) const;
+
+    // Functie addBottomLayer
+    // Voegt aan de container table als eerste layer de string zelf toe (één per één de aparte charachters).
+    void addBottomLayer(vector<vector<vector<string>>> &table, const string &str);
+
+    // Functie makeCrossProduct:
+    // Hier doen we een cross product van deelstring x1 (opgeslagen als vector<string>)
+    // en deelstring x2 (opgeslagen als vector<string>) en we stoppen het resultaat in de 'products' vector.
+    void makeCrossProduct(const vector<string> &x1, const vector<string> &x2, vector<string> &products);
+
+    // Functie isProduction:
+    // Checkt of de meegegeven body ergens voorkomt in een production en geeft alle heads van deze productions terug.
     vector<string> isProduction(const vector<string> &body);
 };
 

@@ -80,20 +80,12 @@ bool CFG::accepts(const string &str) {
         maxLength.push_back(0);
     }
 
-    vector<vector<string>> v;
-    for (int i = 0; i < str.size(); i++) {
-        vector<string> a = {string(1, str[i])};
-        v.push_back(a);
-    }
-    table.push_back(v);
-
+    addBottomLayer(table, str);
 
     for (int i = 0; i < str.size(); i++) {
-
         vector<vector<string>> layer;
 
         for (int j = 0; j < str.size()-i; j++) {
-
             vector<string> t;
             string str1 = str.substr(j, i+1);
 
@@ -106,9 +98,7 @@ bool CFG::accepts(const string &str) {
                 if (X.size() > maxLength[j]) {
                     maxLength[j] = X.size();
                 }
-
             }
-
             else {
                 string str2;
                 string str3;
@@ -133,26 +123,10 @@ bool CFG::accepts(const string &str) {
                         x2 = table[str3.size()][j+str2.size()];
                     }
 
-                    for (int i1 = 0; i1 < x1.size(); i1++) {
-                        vector<string> product;
-                        for (int i2 = 0; i2 < x2.size(); i2++) {
-                            product.push_back(x1[i1]);
-                            product.push_back(x2[i2]);
-
-                            product = isProduction(product); // overwrite
-
-                            for (int s = 0; s < product.size(); s++) {
-                                if (! count(products.begin(), products.end(), product[s])) { // duplicaten niet toelaten
-                                    products.push_back(product[s]);
-                                }
-                            }
-                            product.clear();
-                        }
-                    }
+                    makeCrossProduct(x1, x2, products);
                 }
                 X = products;
                 layer.push_back(X);
-
                 if (X.size() > maxLength[j]) {
                     maxLength[j] = X.size();
                 }
@@ -161,20 +135,30 @@ bool CFG::accepts(const string &str) {
         table.push_back(layer);
     }
 
-    //// printing output part
+    return printTable(table, maxLength);
+}
+
+vector<string> CFG::isProduction(const vector<string> &body) {
+
+    vector<string> heads;
+    for (int i = 0; i < this->P.size(); i++) {
+        if (this->P[i].second == body) {
+            heads.push_back(this->P[i].first);
+        }
+    }
+    return heads;
+}
+
+bool CFG::printTable(vector<vector<vector<string>>>& table, const vector<int>& maxLength) const {
 
     bool belongs = false;
-
     for (int i = (int) table.size()-1; i > 0; i--) {
-
         if (i == table.size()-1) {
             if (count(table[i][0].begin(), table[i][0].end(), S)) {
                 belongs = true;
             }
         }
-
         for (int j = 0; j < table[i].size(); j++) {
-
             int totalStringLength = maxLength[j]+(maxLength[j]-1)*2+1+2; // vanaf {
             int amountOfSpaces = 0; // vanaf }
             if (table[i][j].empty()) {
@@ -183,7 +167,6 @@ bool CFG::accepts(const string &str) {
             else {
                 amountOfSpaces = totalStringLength-((int)table[i][j].size()+((int)table[i][j].size()-1)*2+1);
             }
-
             cout << "| ";
             cout << "{";
             sort(table[i][j].begin(), table[i][j].end());
@@ -197,17 +180,14 @@ bool CFG::accepts(const string &str) {
                         cout << ", ";
                     }
                 }
-
             }
             cout << "}";
             for (int k = 0; k < amountOfSpaces; k++) {
                 cout << " ";
             }
-
         }
         cout << "|" << endl;
     }
-
     if (belongs) {
         cout << "true" << endl;
     }
@@ -217,15 +197,32 @@ bool CFG::accepts(const string &str) {
     return belongs;
 }
 
-vector<string> CFG::isProduction(const vector<string> &body) {
+void CFG::addBottomLayer(vector<vector<vector<string>>> &table, const string &str) {
+    vector<vector<string>> v;
+    for (int i = 0; i < str.size(); i++) {
+        vector<string> a = {string(1, str[i])};
+        v.push_back(a);
+    }
+    table.push_back(v);
+}
 
-    vector<string> heads;
-    for (int i = 0; i < this->P.size(); i++) {
-        if (this->P[i].second == body) {
-            heads.push_back(this->P[i].first);
+void CFG::makeCrossProduct(const vector<string> &x1, const vector<string> &x2, vector<string> &products) {
+    for (int i1 = 0; i1 < x1.size(); i1++) {
+        vector<string> product;
+        for (int i2 = 0; i2 < x2.size(); i2++) {
+            product.push_back(x1[i1]);
+            product.push_back(x2[i2]);
+
+            product = isProduction(product); // overwrite
+
+            for (int s = 0; s < product.size(); s++) {
+                if (! count(products.begin(), products.end(), product[s])) { // duplicaten niet toelaten
+                    products.push_back(product[s]);
+                }
+            }
+            product.clear();
         }
     }
-    return heads;
 }
 
 CFG::CFG() = default;
