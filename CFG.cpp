@@ -100,31 +100,10 @@ bool CFG::accepts(const string &str) {
                 }
             }
             else {
-                string str2;
-                string str3;
 
                 vector<string> products;
-                for (int k = 1; k < str1.size(); k++) {
-                    str2 = str1.substr(0, k);
-                    str3 = str1.substr(k, str1.size()-(k));
+                giveProductsFromSubstrings(products, str1, table, i, j);
 
-                    vector<string> x1; // eerste deelstring
-                    if (str2.size() == 1) {
-                        x1 = table[1][j];
-                    }
-                    else {
-                        x1 = table[str2.size()][j];
-                    }
-                    vector<string> x2; // tweede deelstring
-                    if (str3.size() == 1) {
-                        x2 = table[1][j+i];
-                    }
-                    else {
-                        x2 = table[str3.size()][j+str2.size()];
-                    }
-
-                    makeCrossProduct(x1, x2, products);
-                }
                 X = products;
                 layer.push_back(X);
                 if (X.size() > maxLength[j]) {
@@ -134,7 +113,6 @@ bool CFG::accepts(const string &str) {
         }
         table.push_back(layer);
     }
-
     return printTable(table, maxLength);
 }
 
@@ -222,6 +200,30 @@ void CFG::makeCrossProduct(const vector<string> &x1, const vector<string> &x2, v
             }
             product.clear();
         }
+    }
+}
+
+void CFG::giveProductsFromSubstrings(vector<string> &products, const string &str1, const vector<vector<vector<string>>> &table, int i, int j) {
+    for (int k = 1; k < str1.size(); k++) {
+        string str2 = str1.substr(0, k);
+        string str3 = str1.substr(k, str1.size()-(k));
+
+        vector<string> x1; // eerste deelstring
+        if (str2.size() == 1) {
+            x1 = table[1][j];
+        }
+        else {
+            x1 = table[str2.size()][j];
+        }
+        vector<string> x2; // tweede deelstring
+        if (str3.size() == 1) {
+            x2 = table[1][j+i];
+        }
+        else {
+            x2 = table[str3.size()][j+str2.size()];
+        }
+
+        makeCrossProduct(x1, x2, products);
     }
 }
 
