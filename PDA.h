@@ -19,6 +19,8 @@ public:
 
     PDA(const string& filename);
 
+    // Functie toCFG:
+    // Converteert een PDA naar een (equivalente) CFG.
     CFG toCFG();
 
     // Functie createBracketState:
@@ -36,11 +38,43 @@ public:
     // Maakt de start productions, dus alle mogelijkheden S -> [qZ0x] (x element van Q)
     void makeStartProductions(CFG &cfg);
 
+    // Functie makeRestProductions:
+    // Maakt de rest productions, [qXrk] -> a[r0Y1r1][r1Y2r2]...[rk-1Ykrk]
     void makeRestProductions(CFG &cfg);
 
+    // Functie makeBodies:
+    // Wordt gebruikt om de bodies van de productions te maken
+    // @param temp: opgeslagen laatste symbool bij tot nu toe laatste bracket state
+    // @param deelProductions: container waar de productions (bodies) worden opgeslagen.
+    // @param t: iterator van de loop over de transitions.
+    // @param i: iterator van de loop over de terminal symbols.
     void makeBodies(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int i);
 
+    // Functie addProductionsToCfg:
+    // Voegt alle productions (met body bestaande uit stateToString2 en de juiste deelbody van deelProductions, en als head stateToString1) aan de CFG toe.
     void addProductionsToCfg(CFG &cfg, const vector<pair<string, vector<string>>> &deelProductions, const string &stateToString1, const string &stateToString2);
+
+    // Functie createMiddleBracket:
+    // Maakt een bracket state aan (niet in het begin of einde van body), en voegt deze toe aan de juiste production body.
+    // @param temp: opgeslagen laatste symbool bij tot nu toe laatste bracket state
+    // @param deelProductions: container waar de productions (bodies) worden opgeslagen.
+    // parameters (int) t en (int) j zijn iterators.
+    void createMiddleBracket(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int j);
+
+    // Functie createBeginBracket:
+    // Maakt een bracket state aan (in het begin van body)(, en voegt deze toe aan de juiste production body).
+    // @param temp: opgeslagen laatste symbool bij tot nu toe laatste bracket state
+    // @param deelProductions: container waar de productions (bodies) worden opgeslagen.
+    // parameters (int) t en (int) j zijn iterators.
+    // @param dP: temporary container voor een temp string (laatste symbool bij vorige bracket) en een production body (pair<temp, prod. body>).
+    void createBeginBracket(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int j, pair<string, vector<string>> &dP);
+
+    // Functie createBackBracket:
+    // Maakt een bracket state aan (op het einde van een body), en voegt deze toe aan de juiste production body.
+    // @param temp: opgeslagen laatste symbool bij tot nu toe laatste bracket state
+    // @param deelProductions: container waar de productions (bodies) worden opgeslagen.
+    // parameters (int) t, (int) j en (int) j zijn iterators.
+    void createBackBracket(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int j, int i);
 };
 
 

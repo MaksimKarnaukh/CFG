@@ -104,11 +104,10 @@ void PDA::makeRestProductions(CFG &cfg) {
     }
 }
 
-void PDA::makeBodies(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int i) {
+void PDA::makeBodies(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int i) { // minder dan 50 lijnen
     string stateToString3;
     for (int j = 0; j < this->Transitions[t]["replacement"].size(); j++) { // bij body, combinatie van alle stacksymbolen uit "replacements".
-
-        pair<string, vector<string>> dP;
+        pair<string, vector<string>> dP; // temporary container voor een temp string (laatste symbool bij vorige bracket) en een production body
         if (j == this->Transitions[t]["replacement"].size()-1) { // endbracket
             stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[i]); // eindstate = beginstate van eerste bracket
             if (j == 0) { // geval met maar één replacement symbol
@@ -116,46 +115,16 @@ void PDA::makeBodies(string &temp, vector<pair<string, vector<string>>> &deelPro
                 dP.second.push_back(stateToString3);
                 deelProductions.emplace_back(dP.first, dP.second);
             }
-            else {
-                for (int k = 0; k < deelProductions.size(); k++) {
-                    temp = deelProductions[k].first;
-                    stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[i]); // eindstate = beginstate van eerste bracket
-
-                    deelProductions[k].second.push_back(stateToString3); // production waar we aan toevoegen elke keer
-
-                }
+            else { // we zitten in de laatste bracket state, deze wordt dus gewoon vanachter bij de body toegevoegd, temp moet niet meer worden bijgehouden bij de body.
+                createBackBracket(temp, deelProductions, t, j, i);
             }
         }
         else {
-
             if (j == 0) { // beginbracket
-                for (int k = 0; k < this->States.size(); k++) {
-                    stateToString3 = createBracketState(this->Transitions[t]["to"], this->Transitions[t]["replacement"][j], this->States[k]);
-                    temp = this->States[k];
-
-                    dP.first = temp;
-                    dP.second.push_back(stateToString3);
-                    deelProductions.emplace_back(dP.first, dP.second);
-                    dP.second.clear();
-                }
+                createBeginBracket(temp, deelProductions, t, j, dP); // j is eigenlijk 0 hier, maar we voegen de parameter toe omwille van gewoonte in de code.
             }
             else { // middenbracket
-
-                vector<pair<string, vector<string>>> deelProdCopy;
-                for (int c = 0; c < deelProductions.size(); c++) {
-                    for (int k = 0; k < this->States.size(); k++)  {
-
-                        temp = deelProductions[c].first;
-                        stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[k]);
-                        temp = this->States[k];
-
-                        vector<string> dp = deelProductions[c].second;
-                        dp.push_back(stateToString3);
-
-                        deelProdCopy.emplace_back(temp, dp);
-                    }
-                }
-                deelProductions = deelProdCopy;
+                createMiddleBracket(temp, deelProductions, t, j);
             }
         }
         stateToString3 = "";
@@ -166,12 +135,53 @@ void PDA::addProductionsToCfg(CFG &cfg, const vector<pair<string, vector<string>
                               const string &stateToString2) {
 
     for (int a = 0; a < deelProductions.size(); a++) {
-        vector<string> prod = {stateToString2}; // = één production [...] => a [...] ... [...] met a = stateToString2.
+        vector<string> prod = {stateToString2}; // = één production: [...] => a [...] ... [...] met a = stateToString2.
         for (int b = 0; b < deelProductions[a].second.size(); b++) {
             prod.push_back(deelProductions[a].second[b]);
         }
-        cfg.P.emplace_back(stateToString1, prod);
+        cfg.P.emplace_back(stateToString1, prod); // stateToString1 is de head.
 
+    }
+}
+
+void PDA::createMiddleBracket(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int j) {
+    vector<pair<string, vector<string>>> deelProdCopy; // temporary container gebruikt om de bracket state toe te voegen aan elke production body.
+    for (int c = 0; c < deelProductions.size(); c++) {
+        for (int k = 0; k < this->States.size(); k++)  {
+
+            temp = deelProductions[c].first; // temp (vorige symbool) is telkens anders, daarom dat we dat eerst eruit moeten halen (we hebben dit namelijk o.a. hiervoor opgeslagen).
+            string stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[k]);
+            temp = this->States[k];
+
+            vector<string> dp = deelProductions[c].second; // dp (deelproductie), bevat de (tot nu toe) complete production body (zie ook volgende lijn).
+            dp.push_back(stateToString3);
+
+            deelProdCopy.emplace_back(temp, dp);
+        }
+    }
+    deelProductions = deelProdCopy;
+}
+
+void PDA::createBeginBracket(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int j,
+                             pair<string, vector<string>> &dP) {
+
+    for (int k = 0; k < this->States.size(); k++) {
+        string stateToString3 = createBracketState(this->Transitions[t]["to"], this->Transitions[t]["replacement"][j], this->States[k]);
+        temp = this->States[k];
+
+        dP.first = temp;
+        dP.second.push_back(stateToString3);
+        deelProductions.emplace_back(dP.first, dP.second);
+        dP.second.clear();
+    }
+
+}
+
+void PDA::createBackBracket(string &temp, vector<pair<string, vector<string>>> &deelProductions, int t, int j, int i) {
+    for (int k = 0; k < deelProductions.size(); k++) {
+        temp = deelProductions[k].first;
+        string stateToString3 = createBracketState(temp, this->Transitions[t]["replacement"][j], this->States[i]); // eindstate = beginstate van eerste bracket
+        deelProductions[k].second.push_back(stateToString3); // production waar we aan toevoegen elke keer vanachter (sinds dit de laatste bracket state is in de body).
     }
 }
 
