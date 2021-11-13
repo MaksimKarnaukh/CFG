@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <fstream>
 #include "json.hpp"
+#include <set>
 
 using namespace std;
 using json = nlohmann::json;
@@ -54,6 +55,14 @@ public:
     // Functie isProduction:
     // Checkt of de meegegeven body ergens voorkomt in een production en geeft alle heads van deze productions terug.
     vector<string> isProduction(const vector<string> &body);
+
+
+
+    void ll();
+
+    vector<vector<string>> findBodiesOfVar(string &var);
+
+    void findFirst(set<string> &first, vector<string> &variable);
 };
 
 

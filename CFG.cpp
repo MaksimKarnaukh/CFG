@@ -227,4 +227,86 @@ void CFG::giveProductsFromSubstrings(vector<string> &products, const string &str
     }
 }
 
+void CFG::ll() {
+//    algoritme hoofdzakelijk volgens https://www.geeksforgeeks.org/construction-of-ll1-parsing-table/
+
+    // berekenen van FIRST
+    map<string, set<string>> first;
+    for (int i = 0; i < this->P.size(); i++) {
+        auto it = first.find(this->P[i].first);
+
+        if (it == first.end()) { // variabele is nog niet in de map
+            vector<vector<string>> bodies = findBodiesOfVar(this->P[i].first);
+
+            set<string> firstForSymbol;
+            for (auto x = 0; x < bodies.size(); x++) {
+                findFirst(firstForSymbol, bodies[x]);
+            }
+            first.insert(make_pair(this->P[i].first, firstForSymbol));
+        }
+    }
+
+    // berekenen van FOLLOW
+    map<string, set<string>> follow;
+
+    // make table
+}
+
+void CFG::findFirst(set<string> &first, vector<string> &body) {
+//    https://www.geeksforgeeks.org/first-set-in-syntax-analysis/
+//    If x is a terminal, then FIRST(x) = { ‘x’ }
+//    If x-> Є, is a production rule, then add Є to FIRST(x).
+//    If X->Y1 Y2 Y3….Yn is a production,
+//    FIRST(X) = FIRST(Y1)
+//    If FIRST(Y1) contains Є then FIRST(X) = { FIRST(Y1) – Є } U { FIRST(Y2) }
+//    If FIRST (Yi) contains Є for all i = 1 to n, then add Є to FIRST(X).
+
+    if (body.size() == 1 && body[0].empty()) {
+        first.insert(" ");
+    }
+    else {
+        for (auto j = 0; j < body.size(); j++) {
+            if (count(this->T.begin(), this->T.end(), body[j])) {
+                first.insert(body[j]);
+                break;
+            }
+            else {
+                vector<vector<string>> bodiesVanVariabele = findBodiesOfVar(body[j]);
+                set<string> firstTemp;
+                for (auto x = 0; x < bodiesVanVariabele.size(); x++) {
+
+                    if (bodiesVanVariabele[x][0] != body[0]) { // voorkomen van infinite recursion => {"head": "A", "body": ["A", "c"]},
+                                                               //                                     {"head": "A", "body": ["A", "a", "d"]},...
+
+                        findFirst(firstTemp, bodiesVanVariabele[x]);
+                    }
+                }
+
+                bool epsilonPresent = false;
+                for (auto it = firstTemp.begin(); it != firstTemp.end(); it++) {
+
+                    if (*it == " ") {
+                        epsilonPresent = true;
+                    }
+                    first.insert(*it);
+                }
+                if (! epsilonPresent) {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+vector<vector<string>> CFG::findBodiesOfVar(string &var) {
+
+    vector<vector<string>> bodies;
+    for (int i = 0; i < this->P.size(); i++) {
+        if (var == this->P[i].first) {
+            bodies.push_back(this->P[i].second);
+        }
+    }
+    return bodies;
+}
+
 CFG::CFG() = default;
